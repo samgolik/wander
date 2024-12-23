@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:wander/data/category_data.dart';
+import 'package:wander/screens/category_screen.dart';
 import 'package:wander/screens/home_screen.dart';
 import 'package:wander/screens/login_screen.dart';
 import 'package:wander/screens/register_screen.dart';
@@ -28,6 +30,15 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => HomeScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/category') {
+          final CategoryData categoryData = settings.arguments as CategoryData;
+          return MaterialPageRoute(
+            builder: (context) => CategoryScreen(categoryData: categoryData),
+          );
+        }
+        return null;
       },
     );
   }

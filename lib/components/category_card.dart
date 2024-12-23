@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wander/data/category_data.dart';
 
-class Category extends StatelessWidget {
+class CategoryCard extends StatelessWidget {
   final CategoryData categoryData;
 
-  const Category({super.key, required this.categoryData});
+  const CategoryCard({super.key, required this.categoryData});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,10 @@ class Category extends StatelessWidget {
         borderRadius:
             BorderRadius.circular(12), // Rounded corners for tap effect
         onTap: () {
-          // Handle the tap event
+          Navigator.of(context).pushNamed(
+            '/category',
+            arguments: categoryData,
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
