@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wander/components/category_card.dart';
-import 'package:wander/data/category_data.dart';
+import 'package:wander/model/category.dart';
 
 class CategoryList extends StatelessWidget {
-  final List<CategoryData> categories;
+  final List<Category> categories;
 
   const CategoryList({super.key, required this.categories});
 
@@ -14,7 +14,7 @@ class CategoryList extends StatelessWidget {
       itemBuilder: (context, index) {
         return SizedBox(
           width: double.infinity,
-          child: CategoryCard(categoryData: categories[index]),
+          child: CategoryCard(category: categories[index]),
         );
       },
     );

@@ -1,10 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:wander/data/category_data.dart';
+import 'package:wander/model/category.dart';
+import 'package:wander/firebase_options.dart';
 import 'package:wander/screens/category_screen.dart';
 import 'package:wander/screens/home_screen.dart';
 import 'package:wander/screens/login_screen.dart';
+import 'package:wander/screens/profile_screen.dart';
 import 'package:wander/screens/register_screen.dart';
+import 'package:wander/screens/temporary_screen.dart';
 // import 'package:flutter_map/flutter_map.dart';
 // import 'package:latlong2/latlong.dart';
 // import 'package:url_launcher/url_launcher.dart';
@@ -26,16 +30,20 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginScreen(),
+        '/': (context) => const AuthHandler(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/home': (context) => HomeScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/temporary': (context) => TemporaryScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/category') {
-          final CategoryData categoryData = settings.arguments as CategoryData;
+          final Category category = settings.arguments as Category;
           return MaterialPageRoute(
-            builder: (context) => CategoryScreen(categoryData: categoryData),
+            builder: (context) => CategoryScreen(
+                category: category,
+                userId: FirebaseAuth.instance.currentUser!.uid),
           );
         }
         return null;
@@ -43,6 +51,40 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class AuthHandler extends StatelessWidget {
+  const AuthHandler({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, authSnapshot) {
+              if (authSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (authSnapshot.hasData) {
+                return const HomeScreen(); // User is logged in
+              } else {
+                return LoginScreen(); // User is not logged in
+              }
+            },
+          );
+        }
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error initializing Firebase'));
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+}
+
 
 // class TravelListPage extends StatefulWidget {
 //   final String categoryName;

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wander/main.dart';
+import 'package:wander/model/user.dart' as user_model;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,14 +24,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         showLoadingIndicator();
-        await _auth.createUserWithEmailAndPassword(
+
+        // Create user in Firebase Authentication
+        final userCredential = await _auth.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        hideLoadingIndicator();
-        navigateToHome();
+
+        // Get the user ID
+        final userId = userCredential.user?.uid;
+        if (userId != null) {
+          // Create user document in Firestore
+          final user = user_model.User(
+            uid: userId,
+            email: _emailController.text.trim(),
+            selectedCategories: [],
+            visitedLocations: {},
+          );
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .set(user.toFirestore());
+
+          hideLoadingIndicator();
+          navigateToHome();
+        } else {
+          throw Exception("Failed to create user in Firebase Authentication");
+        }
       } on FirebaseAuthException catch (e) {
+        hideLoadingIndicator();
         showSnackBar('Registration failed: ${e.message}');
+      } catch (e) {
+        hideLoadingIndicator();
+        showSnackBar('An unexpected error occurred: ${e.toString()}');
       }
     }
   }

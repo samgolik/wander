@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wander/data/category_data.dart';
+import 'package:wander/model/category.dart';
 
 class CategoryCard extends StatelessWidget {
-  final CategoryData categoryData;
+  final Category category;
 
-  const CategoryCard({super.key, required this.categoryData});
+  const CategoryCard({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class CategoryCard extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pushNamed(
             '/category',
-            arguments: categoryData,
+            arguments: category,
           );
         },
         child: Padding(
@@ -32,13 +32,13 @@ class CategoryCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    categoryData.icon,
+                    category.icon,
                     size: 32, // Slightly larger icon
                     color: Theme.of(context).primaryColor, // Matches theme
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    categoryData.title,
+                    category.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.black87, // Darker text color
@@ -48,7 +48,7 @@ class CategoryCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                categoryData.placesProgress,
+                'Placeholder',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context)
